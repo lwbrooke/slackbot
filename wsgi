@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import src.app
+import fanghorn.app
 
 
-app = src.app.get_app()
+app = fanghorn.app.get_app()
