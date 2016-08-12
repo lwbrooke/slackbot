@@ -1,4 +1,5 @@
 PyYAML
 falcon
 falcon-cors
+marshmallow
 slackclient
