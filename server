@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 from werkzeug.serving import run_simple
 import argparse
-import fanghorn.app
+import fanghorn.main
+
+_ENV_CHOICES = {'local', 'prod'}
 
 
 def main(args):
-    app = fanghorn.app.get_app()
-    run_simple(application=app, **args)
+    app = fanghorn.main.get_app(args.env)
+    run_simple(
+        args.hostname,
+        args.port,
+        app,
+        use_reloader=args.use_reloader,
+        use_debugger=args.use_debugger)
 
 
 if __name__ == '__main__':
@@ -18,7 +25,8 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--port', default=8080, help='the port for the slackbot server')
     parser.add_argument('-r', '--use-reloader', action='store_false', help='reload server on file changes')
     parser.add_argument('-d', '--use-debugger', action='store_false', help='debug mode')
+    parser.add_argument('-e', '--env', default='local', choices=_ENV_CHOICES, help='environment to run in')
 
     args = parser.parse_args()
 
-    main(vars(args))
+    main(args)
