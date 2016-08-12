@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+from werkzeug.serving import run_simple
+import argparse
+import fanghorn.app
+
+
+def main(args):
+    app = fanghorn.app.get_app()
+    run_simple(application=app, **args)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Run the development server',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument('-H', '--hostname', default='127.0.0.1', help='the host for slackbot server')
+    parser.add_argument('-p', '--port', default=8080, help='the port for the slackbot server')
+    parser.add_argument('-r', '--use-reloader', action='store_false', help='reload server on file changes')
+    parser.add_argument('-d', '--use-debugger', action='store_false', help='debug mode')
+
+    args = parser.parse_args()
+
+    main(vars(args))
