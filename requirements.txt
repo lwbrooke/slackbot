@@ -1,3 +1,4 @@
 PyYAML
 falcon
 falcon-cors
+slackclient
