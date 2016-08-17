@@ -1,4 +1,4 @@
-import collections
+from collections import namedtuple
 import falcon
 import marshmallow
 import slackclient
@@ -6,25 +6,25 @@ import slackclient
 
 class SlackMessageRouter:
     def __init__(self, config):
-        self._slack = slackclient.SlackClient(config['api_token'])
+        self._slack = slackclient.SlackClient(config['bot_user']['token'])
 
-        webhooks = config['webhooks']
-        self._schema = WebhookDataSchema({w['token'] for w
-                                          in webhooks.values()})
-        self._matchers = {k: tuple(Matcher(m) for m in w.get('matchers', ()))
-                          for k, w in webhooks.items()}
-        self._channels = {k: w['channel'] for k, w in webhooks.items()}
+        webhook = config['outgoing_webhook']
+        self._schema = WebhookDataSchema(webhook['token'],
+                                         set(webhook['matchers'].keys()))
+        self._matchers = {user_name: Matcher(spec) for
+                          user_name, spec in webhook['matchers'].items()}
 
-    def on_post(self, req, resp, channel):
+    def on_post(self, req, resp):
         data, err = self._schema.load(req.params)
         if err:
             resp.status = falcon.HTTP_400
             return
 
-        if any(m(data.text) for m in self._matchers[channel]):
+        matcher = self._matchers[data.user_name]
+        if matcher(data):
             self._slack.api_call(
                 'chat.postMessage',
-                channel=self._channels[channel],
+                channel=matcher.channel,
                 text='This looks interesting...',
                 attachments=[{'text': data.text}],
                 as_user=True)
@@ -32,20 +32,27 @@ class SlackMessageRouter:
         resp.status = falcon.HTTP_200
 
 
-WebhookData = collections.namedtuple('WebhookData', ('token', 'text'))
+WebhookData = namedtuple('WebhookData', ('token', 'text', 'user_name'))
 
 
 class WebhookDataSchema(marshmallow.Schema):
     token = marshmallow.fields.String(required=True)
     text = marshmallow.fields.String(required=True)
+    user_name = marshmallow.fields.String(required=True)
 
-    def __init__(self, webhook_tokens):
+    def __init__(self, webhook_token, user_names):
         super().__init__()
-        self._tokens = webhook_tokens
+        self._token = webhook_token
+        self._user_names = user_names
+
+    @marshmallow.validates('user_name')
+    def _matches_user_name(self, value):
+        if value not in self._user_names:
+            raise marshmallow.ValidationError('invalid user name')
 
     @marshmallow.validates('token')
     def _matches_token(self, value):
-        if value not in self._tokens:
+        if value != self._token:
             raise marshmallow.ValidationError('invalid token')
 
     @marshmallow.post_load
@@ -54,8 +61,13 @@ class WebhookDataSchema(marshmallow.Schema):
 
 
 class Matcher:
-    def __init__(self, matcher):
-        self._matcher = matcher
+    def __init__(self, spec):
+        self._text_contains = spec['text_contains']
+        self._output_channel = spec['output_channel']
 
-    def __call__(self, text):
-        return self._matcher in text
+    def __call__(self, data):
+        return any(t in data.text for t in self._text_contains)
+
+    @property
+    def channel(self):
+        return self._output_channel

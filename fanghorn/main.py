@@ -17,7 +17,7 @@ def _build_app(config):
 
     app.req_options.auto_parse_form_urlencoded = True
 
-    app.add_route('/api/messagerouter/{channel}',
+    app.add_route('/api/messagerouter',
                   SlackMessageRouter(config['slack']))
 
     return app

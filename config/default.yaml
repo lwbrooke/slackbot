@@ -1,1 +1,10 @@
 ---
+slack:
+  outgoing_webhook:
+    matchers:
+      Build a PC Sales:
+        text_contains:
+          - "sennheiser"
+          - "hd 598"
+          - "[chair]"
+        output_channel: "#general"
