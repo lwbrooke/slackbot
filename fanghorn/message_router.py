@@ -66,7 +66,8 @@ class Matcher:
         self._output_channel = spec['output_channel']
 
     def __call__(self, data):
-        return any(t in data.text for t in self._text_contains)
+        lowered = data.text.lower()
+        return any(t in lowered for t in self._text_contains)
 
     @property
     def channel(self):
