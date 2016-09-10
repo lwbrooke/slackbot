@@ -18,7 +18,7 @@ class SlackMessageRouter:
     def on_post(self, req, resp):
         h = '\n'.join('\t{}: {}'.format(k, v) for k, v in req.headers.items())
         p = '\n'.join('\t{}: {}'.format(k, v) for k, v in req.params.items())
-        logging.info('\nheaders: %s\nparams: %s', h, p)
+        logging.info('\nheaders: \n%s\nparams: \n%s', h, p)
 
         data, err = self._schema.load(req.params)
         if err:
@@ -44,16 +44,18 @@ class WebhookDataSchema(marshmallow.Schema):
     token = marshmallow.fields.String(required=True)
     text = marshmallow.fields.String(required=True)
     user_name = marshmallow.fields.String(required=True)
+    bot_name = marshmallow.fields.String()
 
     def __init__(self, webhook_token, user_names):
         super().__init__()
         self._token = webhook_token
         self._user_names = user_names
 
-    @marshmallow.validates('user_name')
-    def _matches_user_name(self, value):
-        if value not in self._user_names:
-            raise marshmallow.ValidationError('invalid user name')
+    @marshmallow.validates_schema
+    def _matches_user_name_or_bot_name(self, data):
+        if data.get('user_name') not in self._user_names or \
+                data.get('bot_name') not in self._user_names:
+            raise marshmallow.ValidationError('invalid user/bot name')
 
     @marshmallow.validates('token')
     def _matches_token(self, value):
@@ -62,6 +64,9 @@ class WebhookDataSchema(marshmallow.Schema):
 
     @marshmallow.post_load
     def _post_load(self, data):
+        if 'bot_name' in data:
+            data['user_name'] = data['bot_name']
+            del data['bot_name']
         return WebhookData(**data)
 
 
