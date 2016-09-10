@@ -14,6 +14,8 @@ class SlackMessageRouter:
                                          set(webhook['matchers'].keys()))
         self._matchers = {user_name: Matcher(spec) for
                           user_name, spec in webhook['matchers'].items()}
+        logging.info('valid user names %s', ' '
+                     .join(webhook['matchers'].keys()))
 
     def on_post(self, req, resp):
         h = '\n'.join('\t{}: {}'.format(k, v) for k, v in req.headers.items())
