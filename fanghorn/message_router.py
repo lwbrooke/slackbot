@@ -30,7 +30,7 @@ class SlackMessageRouter:
             self._slack.api_call(
                 'chat.postMessage',
                 channel=matcher.channel,
-                text='@channel: This looks interesting...',
+                text='<!channel>: This looks interesting...',
                 attachments=[{'text': data.text}],
                 as_user=True)
 
