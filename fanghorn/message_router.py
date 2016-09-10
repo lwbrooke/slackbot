@@ -22,6 +22,7 @@ class SlackMessageRouter:
 
         data, err = self._schema.load(req.params)
         if err:
+            logging.info('%s %s', data, err)
             resp.status = falcon.HTTP_400
             return
 
