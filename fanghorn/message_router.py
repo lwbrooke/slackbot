@@ -16,8 +16,9 @@ class SlackMessageRouter:
                           user_name, spec in webhook['matchers'].items()}
 
     def on_post(self, req, resp):
-        logging.info('headers: %s\nparams: %s', str(req.headers),
-                     str(req.params))
+        h = '\n'.join('\t{}: {}'.format(k, v) for k, v in req.headers.items())
+        p = '\n'.join('\t{}: {}'.format(k, v) for k, v in req.params.items())
+        logging.info('\nheaders: %s\nparams: %s', h, p)
 
         data, err = self._schema.load(req.params)
         if err:
