@@ -2,6 +2,7 @@ from collections import namedtuple
 import falcon
 import marshmallow
 import slackclient
+import logging
 
 
 class SlackMessageRouter:
@@ -15,6 +16,9 @@ class SlackMessageRouter:
                           user_name, spec in webhook['matchers'].items()}
 
     def on_post(self, req, resp):
+        logging.info('headers: %s\nparams: %s\nbody: %s', str(req.headers),
+                     str(req.params), str(req.body))
+
         data, err = self._schema.load(req.params)
         if err:
             resp.status = falcon.HTTP_400
@@ -25,7 +29,7 @@ class SlackMessageRouter:
             self._slack.api_call(
                 'chat.postMessage',
                 channel=matcher.channel,
-                text='This looks interesting...',
+                text='@channel: This looks interesting...',
                 attachments=[{'text': data.text}],
                 as_user=True)
 

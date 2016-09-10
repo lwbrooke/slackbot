@@ -1,4 +1,12 @@
 import yaml
+import logging
+
+
+def set_up_logging(level=None):
+    level = level or logging.INFO
+    handlers = [logging.StreamHandler()]
+    log_format = '$(asctime)s:$(levelname)s:$(name)s:$(message)s'
+    logging.basicConfig(level=level, handlers=handlers, format=log_format)
 
 
 def load_configs(env):

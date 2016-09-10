@@ -5,6 +5,7 @@ import falcon
 
 
 def get_app(env):
+    init.set_up_logging()
     config = init.load_configs(env)
     app = _build_app(config)
     return app

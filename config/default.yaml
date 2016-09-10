@@ -8,3 +8,7 @@ slack:
           - "hd 598"
           - "[chair]"
         output_channel: "#general"
+      logan:
+        text_contains:
+          - "passphrase"
+        output_channel: "#general"
