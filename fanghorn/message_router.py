@@ -56,7 +56,7 @@ class WebhookDataSchema(marshmallow.Schema):
 
     @marshmallow.validates_schema
     def _matches_user_name_or_bot_name(self, data):
-        if data.get('user_name') not in self._user_names or \
+        if data.get('user_name') not in self._user_names and \
                 data.get('bot_name') not in self._user_names:
             raise marshmallow.ValidationError('invalid user/bot name')
 
