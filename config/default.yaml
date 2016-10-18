@@ -12,3 +12,11 @@ slack:
         text_contains:
           - "passphrase"
         output_channel: "#general"
+google:
+  static_map:
+    url_base: https://maps.googleapis.com/maps/api/staticmap
+    size:
+      width: 400
+      height: 200
+    path_format: weight:5|color:blue|enc:{}
+    marker_format: size:mid|color:red|label:{}|{}

@@ -1,15 +1,16 @@
+from .configuration import config
 from collections import namedtuple
 import falcon
+import logging
 import marshmallow
 import slackclient
-import logging
 
 
 class SlackMessageRouter:
-    def __init__(self, config):
-        self._slack = slackclient.SlackClient(config['bot_user']['token'])
+    def __init__(self):
+        self._slack = slackclient.SlackClient(config['slack']['bot_user']['token'])
 
-        webhook = config['outgoing_webhook']
+        webhook = config['slack']['outgoing_webhook']
         self._schema = WebhookDataSchema(webhook['token'],
                                          set(webhook['matchers'].keys()))
         self._matchers = {user_name: Matcher(spec) for

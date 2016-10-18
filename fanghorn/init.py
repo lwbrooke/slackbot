@@ -1,11 +1,12 @@
-import yaml
+from .configuration import config
 import logging
+import yaml
 
 
 def set_up_logging(level=None):
     level = level or logging.INFO
     handlers = [logging.StreamHandler()]
-    log_format = '$(asctime)s:$(levelname)s:$(name)s:$(message)s'
+    log_format = '%(asctime)s:%(levelname)s\t:%(name)s:%(message)s'
     logging.basicConfig(level=level, handlers=handlers, format=log_format)
 
 
@@ -17,7 +18,7 @@ def load_configs(env):
         env_config = yaml.load(env_in)
         secret_config = yaml.load(secret_in)
 
-    return _merge_configs(default_config, env_config, secret_config)
+    config.update(_merge_configs(default_config, env_config, secret_config))
 
 
 def _merge_configs(*configs):

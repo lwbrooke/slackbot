@@ -1,5 +1,7 @@
 PyYAML
 falcon
 falcon-cors
+googlemaps
 marshmallow
+requests
 slackclient
