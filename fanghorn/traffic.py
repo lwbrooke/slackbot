@@ -2,11 +2,12 @@ from .configuration import config
 from collections import namedtuple
 import falcon
 import googlemaps
+import hashlib
 import json
 import marshmallow
+import os
 import requests
 import slackclient
-import time
 
 _MODE = 'driving'
 _LANGUAGE = 'en'
@@ -24,13 +25,15 @@ class TrafficPoster:
 
         self._gmaps = googlemaps.Client(key=config['google']['directions']['key'])
 
+        self._image_directory = config['google']['static_map']['image_directory']
+        self._image_format = config['google']['static_map']['url_format']
+
         static_map_config = config['google']['static_map']
         self._path_format = static_map_config['path_format']
         self._marker_format = static_map_config['marker_format']
         self._url = static_map_config['url_base']
 
         self._session = requests.Session()
-        self._session.stream = True
         self._session.params = {
             'size': '{}x{}'.format(static_map_config['size']['width'], static_map_config['size']['height']),
             'key': static_map_config['key']
@@ -52,29 +55,31 @@ class TrafficPoster:
             'markers': (self._marker_format.format('A', data.text['from']),
                         self._marker_format.format('B', data.text['to']))
         })
-
-        upload_response = self._slack.api_call(
-            'files.upload',
-            file=map_response.raw,
-            filename='{}.png'.format(time.time()))
-        print(upload_response)
+        fname = '{}.png'.format(hashlib.md5(map_response.content).hexdigest())
+        with open(os.path.join(os.path.expanduser(self._image_directory), fname), 'wb') as fout:
+            fout.write(map_response.content)
 
         resp.body = json.dumps({
             'text': 'Here are the traffic conditions between {} and {}'.format(data.text['from'], data.text['to']),
             'attachments': [
                 {
-                    'title': 'Travel time',
-                    'text': directions_response[0]['legs'][0]['duration']['text']
-                },
-                {
-                    'title': 'Distance',
-                    'text': directions_response[0]['legs'][0]['distance']['text']
-                },
-                {
-                    'title': 'Route',
-                    'image_url': upload_response['file']['url_private']
+                    'fields': [
+
+                        {
+                            'title': 'Duration',
+                            'value': directions_response[0]['legs'][0]['duration_in_traffic']['text'],
+                            'short': True
+                        },
+                        {
+                            'title': 'Distance',
+                            'value': directions_response[0]['legs'][0]['distance']['text'],
+                            'short': True
+                        }
+                    ],
+                    'image_url': self._image_format.format(fname)
                 }
-            ]
+            ],
+            'response_type': 'in_channel'
         })
         resp.status = falcon.HTTP_200
 
