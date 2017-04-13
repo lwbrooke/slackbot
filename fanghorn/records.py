@@ -1,6 +1,7 @@
 from .configuration import config
 from collections import namedtuple
 from datetime import datetime, timezone
+from os.path import expanduser
 import falcon
 import json
 import marshmallow
@@ -106,7 +107,7 @@ class SlashCommandDataSchema(marshmallow.Schema):
 
 class TinnitusWriter:
     def __init__(self, record_file_path):
-        self._path = record_file_path
+        self._path = expanduser(record_file_path)
 
     def write_record(self, record):
         with open(self._path, 'a') as f_out:
