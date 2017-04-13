@@ -55,6 +55,8 @@ class SlashCommandDataSchema(marshmallow.Schema):
             raise marshmallow.ValidationError('invalid token')
 
     def _parse_text(self, text):
+        text = text.strip()
+
         if len(text) < 4 or len(text) > 6:
             raise marshmallow.ValidationError('text must be 4 to 6 characters')
 
