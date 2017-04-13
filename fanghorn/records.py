@@ -15,7 +15,7 @@ class TinnitusRecorder:
         data, err = self._schema.load(req.params)
         if err:
             resp.body = json.dumps({
-                'text': 'invalid command format',
+                'text': 'invalid command format: {}'.formatreq.params['text'],
                 'attachments': [
                     {
                         'text': json.dumps(err)
@@ -30,9 +30,10 @@ class TinnitusRecorder:
         self._record_writer.write_record(record)
 
         resp.body = json.dumps({
-            'text': 'record successfuly written',
+            'text': 'record successfuly written\near: {ear}\nplugged: {plugged}\naudibility: {audibility}\ndecibels: {decibels}'.format(**data.text),
             'response_type': 'ephemeral'
         })
+        resp.status = falcon.HTTP_OK
 
 
 CommandData = namedtuple('CommandData', ('text', 'command', 'response_url', 'token'))
