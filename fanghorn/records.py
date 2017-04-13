@@ -24,6 +24,7 @@ class TinnitusRecorder:
                 'response_type': 'ephemeral'
             })
             resp.status = falcon.HTTP_OK
+            return
 
         record = {**data.text, **{'recorded_time': datetime.now(timezone.utc).isoformat()}}
         self._record_writer.write_record(record)
