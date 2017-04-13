@@ -12,6 +12,9 @@ slack:
         text_contains:
           - "passphrase"
         output_channel: "#general"
+records:
+  tinnitus:
+    path: ~/records/tinnitus
 google:
   static_map:
     url_base: https://maps.googleapis.com/maps/api/staticmap
