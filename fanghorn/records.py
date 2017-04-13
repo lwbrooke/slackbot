@@ -15,7 +15,7 @@ class TinnitusRecorder:
         data, err = self._schema.load(req.params)
         if err:
             resp.body = json.dumps({
-                'text': 'invalid command format: {}'.formatreq.params['text'],
+                'text': 'invalid command format: {}'.format(req.params['text']),
                 'attachments': [
                     {
                         'text': json.dumps(err)
