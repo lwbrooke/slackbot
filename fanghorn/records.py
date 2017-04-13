@@ -67,10 +67,10 @@ class SlashCommandDataSchema(marshmallow.Schema):
         decibels = ''.join(i)
 
         errors = []
-        if ear != 'l' or ear != 'r':
+        if ear != 'l' and ear != 'r':
             errors.append('l or r are the only valid ear choices.')
 
-        if plugged != 't' or plugged != 'f':
+        if plugged != 't' and plugged != 'f':
             errors.append('t or f are the only valid plugged choices.')
         else:
             plugged = plugged == 't'
