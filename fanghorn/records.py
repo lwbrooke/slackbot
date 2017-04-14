@@ -31,7 +31,7 @@ class TinnitusRecorder:
         self._record_writer.write_record(record)
 
         resp.body = json.dumps({
-            'text': 'record successfuly written\near: {ear}\nplugged: {plugged}\naudibility: {audibility}\ndecibels: {decibels}'.format(**data.text),
+            'text': 'record successfuly written\near: {ear}\naudibility: {audibility}\ndecibels: {decibels}'.format(**data.text),
             'response_type': 'ephemeral'
         })
         resp.status = falcon.HTTP_OK
@@ -58,23 +58,17 @@ class SlashCommandDataSchema(marshmallow.Schema):
     def _parse_text(self, text):
         text = text.strip()
 
-        if len(text) < 4 or len(text) > 6:
+        if len(text) < 3 or len(text) > 5:
             raise marshmallow.ValidationError('text must be 4 to 6 characters')
 
         i = iter(text)
         ear = next(i).lower()
-        plugged = next(i).lower()
         audibility = next(i)
         decibels = ''.join(i)
 
         errors = []
         if ear != 'l' and ear != 'r':
             errors.append('l or r are the only valid ear choices.')
-
-        if plugged != 't' and plugged != 'f':
-            errors.append('t or f are the only valid plugged choices.')
-        else:
-            plugged = plugged == 't'
 
         try:
             audibility = int(audibility)
@@ -95,7 +89,6 @@ class SlashCommandDataSchema(marshmallow.Schema):
 
         return {
             'ear': ear,
-            'plugged': plugged,
             'audibility': audibility,
             'decibels': decibels
         }
