@@ -4,9 +4,10 @@ slack:
     matchers:
       Build a PC Sales:
         text_contains:
-          - "sennheiser"
-          - "hd 598"
-          - "[chair]"
+          - "ssd"
+          - "hdd"
+          - "xbox one"
+          - "ultrawide"
         output_channel: "#general"
       logan:
         text_contains:
