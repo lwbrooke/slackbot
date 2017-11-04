@@ -1,2 +1,2 @@
-Werkzeug
+Werkzeug==0.12.2
 -r requirements.txt
