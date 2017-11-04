@@ -1,32 +1,27 @@
 #!/usr/bin/env python3
-from werkzeug.serving import run_simple
-import argparse
+"""Not to be imported directly."""
+
+import click
+
 import fanghorn.main
 
-_ENV_CHOICES = {'local', 'prod'}
+app = None
 
 
-def main(args):
-    app = fanghorn.main.get_app(args.env)
-    run_simple(
-        args.hostname,
-        args.port,
-        app,
-        use_reloader=args.use_reloader,
-        use_debugger=args.use_debugger)
+@click.command()
+@click.option('-h', '--hostname', default='127.0.0.1', show_default=True, help='Host for the server. Local only.')
+@click.option('-p', '--port', default=8080, show_default=True, help='Port for the server. Local only.')
+@click.option('-d', '--debugger', is_flag=True, help='Start server with debugger. Local only.')
+@click.option('-r', '--reloader', is_flag=True, help='Start server with hot reloader. Local only.')
+@click.option('--local', 'env', flag_value='local', default=True, show_default=True, help='Run in dev mode.')
+@click.option('--prod', 'env', flag_value='prod', help='Run in prod mode. Provides an "app" object for a wsgi server.')
+def main(hostname, port, reloader, debugger, env):
+    """Create and optionally run the server."""
+    global app
+    app = fanghorn.main.get_app(env)
+    if env == 'local':
+        from werkzeug.serving import run_simple
+        run_simple(hostname, port, app, use_reloader=reloader, use_debugger=debugger)
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Run the development server',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
-    parser.add_argument('-H', '--hostname', default='127.0.0.1', help='the host for slackbot server')
-    parser.add_argument('-p', '--port', default=8080, help='the port for the slackbot server')
-    parser.add_argument('-r', '--use-reloader', action='store_false', help='reload server on file changes')
-    parser.add_argument('-d', '--use-debugger', action='store_false', help='debug mode')
-    parser.add_argument('-e', '--env', default='local', choices=_ENV_CHOICES, help='environment to run in')
-
-    args = parser.parse_args()
-
-    main(args)
+main()
