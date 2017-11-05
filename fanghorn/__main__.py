@@ -44,7 +44,7 @@ def create_configs(config_dir):
     config_files = pathlib.Path(pkg_resources.resource_filename('fanghorn', 'config_files')).glob('*.yaml')
     with click.progressbar(config_files, label='copying files') as config_files:
         for f in config_files:
-            shutil.copy(f, config_dir)
+            shutil.copy(str(f), config_dir)
 
 
 if __name__ == '__main__':
