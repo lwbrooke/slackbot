@@ -22,5 +22,6 @@ google:
     size:
       width: 400
       height: 200
+    image_directory: '~/maps'
     path_format: weight:5|color:blue|enc:{}
     marker_format: size:mid|color:red|label:{}|{}

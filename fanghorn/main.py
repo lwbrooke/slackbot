@@ -7,9 +7,9 @@ from falcon_cors import CORS
 import falcon
 
 
-def get_app(env):
+def get_app(env, config_dir=None):
+    init.load_configs(env, config_dir)
     init.set_up_logging()
-    init.load_configs(env)
     app = _build_app()
     return app
 

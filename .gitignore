@@ -92,4 +92,4 @@ ENV/
 *.swp
 
 # secrets
-config/secret.yaml
+secret.yaml
