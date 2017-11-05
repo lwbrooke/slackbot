@@ -1,7 +1,8 @@
 from setuptools import setup, find_packages
 
 with open('requirements.txt') as f_in:
-    install_requires = [l.strip() for l in f_in.readlines()]
+    lines = (l.strip() for l in f_in.readlines())
+    install_requires = [l for l in lines if l and not l.startswith('--')]
 
 with open('README.md') as f_in:
     long_description = f_in.read()
