@@ -5,7 +5,7 @@ import shutil
 
 import click
 
-from .main import get_app
+from .server import get_app
 from .utils import path_type
 
 
@@ -15,7 +15,7 @@ def main():
     pass
 
 
-@main.command('dev_server')
+@main.command('dev-server')
 @click.option('--local', 'env', flag_value='local', default=True, show_default=True, help='Run with dev configs.')
 @click.option('--prod', 'env', flag_value='prod', help='Run with prod configs.')
 @click.option('--config-dir', type=path_type, help='Explicit configuration directory to use.')
@@ -45,6 +45,14 @@ def create_configs(config_dir):
     with click.progressbar(config_files, label='copying files') as config_files:
         for f in config_files:
             shutil.copy(str(f), config_dir)
+
+
+@main.command()
+@click.argument('origin')
+@click.argument('destination')
+def traffic(origin, destination):
+    """"""
+    self._slack = slackclient.SlackClient(config['slack']['bot_user']['token'])
 
 
 if __name__ == '__main__':

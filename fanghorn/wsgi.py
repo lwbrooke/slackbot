@@ -1,6 +1,6 @@
 import click
 
-from .main import get_app
+from .server import get_app
 from .utils import path_type
 
 
