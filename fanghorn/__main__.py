@@ -24,10 +24,20 @@ def main():
 @click.option('-d', '--debugger', is_flag=True, help='Start server with debugger.')
 @click.option('-r', '--reloader', is_flag=True, help='Start server with hot reloader.')
 def dev_server(hostname, port, reloader, debugger, env):
-    """Run the development server."""
+    """
+    Run the development server.
+
+    Run the development server with the provided options. Requires the
+    development dependencies to be installed to work.
+    """
     app = get_app(env)
-    from werkzeug.serving import run_simple
-    run_simple(hostname, port, app, use_reloader=reloader, use_debugger=debugger)
+    try:
+        from werkzeug.serving import run_simple
+    except ImportError:
+        click.secho('Development dependencies not installed!', fg='red', err=True)
+        raise click.Abort()
+    else:
+        run_simple(hostname, port, app, use_reloader=reloader, use_debugger=debugger)
 
 
 @main.command('create-configs')
