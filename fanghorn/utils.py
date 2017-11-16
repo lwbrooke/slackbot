@@ -24,7 +24,7 @@ path_type = click.Path(file_okay=False, exists=True, resolve_path=True)
 
 
 class FloatRange(click.ParamType):
-    name = 'float'
+    name = 'float range'
 
     def __init__(self, min=None, max=None, clamp=False):
         if min is not None and max is not None and min > max:
