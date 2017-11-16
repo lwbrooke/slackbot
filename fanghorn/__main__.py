@@ -72,7 +72,14 @@ def create_configs(config_dir):
 @click.argument('origin')
 @click.argument('destination')
 def traffic(env, config_dir, slack_channel, interval, number_of_posts, origin, destination):
-    """Post a traffic map for the provided ORIGIN and DESTINATION to slack."""
+    """
+    Post traffic maps for the provided ORIGIN and DESTINATION to slack.
+
+    Post traffic maps for the provided ORIGIN and DESTINATION to slack. Post a
+    given number of iterations while waiting some amount of time between posts.
+    Aliases may be used for ORIGIN or DESTINATION, or fully addresses.
+    (e.g. "work" or "home")
+    """
     if interval < 0:
         click.secho('Development dependencies not installed!', fg='red', err=True)
         raise click.Abort()
