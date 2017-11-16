@@ -8,7 +8,7 @@ with open('README.md') as f_in:
     long_description = f_in.read()
 
 setup(
-    name='fanghorn',
+    name='fangorn',
     version='0.0.1',
     description='Slackbot for personal use',
     long_description=long_description,
@@ -17,11 +17,11 @@ setup(
     author='Logan Brooke',
     packages=find_packages(),
     package_data={
-        'fanghorn': ['config_files/*.yaml']
+        'fangorn': ['config_files/*.yaml']
     },
     entry_points={
         'console_scripts': [
-            'fanghorn = fanghorn.__main__:main'
+            'fangorn = fangorn.__main__:main'
         ]
     },
     install_requires=install_requires,

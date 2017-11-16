@@ -16,7 +16,7 @@ from .utils import path_type, FloatRange
 
 @click.group()
 def main():
-    """Entry point for fanghorn."""
+    """Entry point for fangorn."""
     pass
 
 
@@ -52,11 +52,11 @@ def create_configs(config_dir):
     config_dir = config_dir or \
         os.path.join(
             os.getenv('XDG_CONFIG_HOME', os.path.join(os.getenv('HOME'), '.config')),
-            'fanghorn')
+            'fangorn')
 
     os.makedirs(config_dir, exist_ok=True)
 
-    config_files = pathlib.Path(pkg_resources.resource_filename('fanghorn', 'config_files')).glob('*.yaml')
+    config_files = pathlib.Path(pkg_resources.resource_filename('fangorn', 'config_files')).glob('*.yaml')
     with click.progressbar(config_files, label='copying files') as config_files:
         for f in config_files:
             shutil.copy(str(f), config_dir)

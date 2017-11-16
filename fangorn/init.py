@@ -20,7 +20,7 @@ def load_configs(env, config_dir=None):
     config_dir = config_dir or \
         os.path.join(
             os.getenv('XDG_CONFIG_HOME', os.path.join(os.getenv('HOME'), '.config')),
-            'fanghorn')
+            'fangorn')
 
     try:
         with open(os.path.join(config_dir, 'default.yaml')) as default_in, \
