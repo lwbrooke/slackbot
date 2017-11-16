@@ -2,11 +2,16 @@ import os
 import pathlib
 import pkg_resources
 import shutil
+import time
 
 import click
+import slackclient
 
+from . import init
+from .configuration import config
+from .google_maps_wrapper import TrafficMapper
 from .server import get_app
-from .utils import path_type
+from .utils import path_type, FloatRange
 
 
 @click.group()
@@ -58,11 +63,36 @@ def create_configs(config_dir):
 
 
 @main.command()
+@click.option('--local', 'env', flag_value='local', default=True, show_default=True, help='Run with dev configs.')
+@click.option('--prod', 'env', flag_value='prod', help='Run with prod configs.')
+@click.option('--config-dir', type=path_type, help='Explicit configuration directory to use.')
+@click.option('--slack-channel', default='#general', help='Channel to post message in.')
+@click.option('-i', '--interval', type=FloatRange(min=0), default=15.0, help='Time in minutes to wait between posts.')
+@click.option('-n', '--number-of-posts', type=click.IntRange(min=1), default=9, help='Number of posts to make.')
 @click.argument('origin')
 @click.argument('destination')
-def traffic(origin, destination):
-    """"""
-    self._slack = slackclient.SlackClient(config['slack']['bot_user']['token'])
+def traffic(env, config_dir, slack_channel, interval, number_of_posts, origin, destination):
+    """Post a traffic map for the provided ORIGIN and DESTINATION to slack."""
+    if interval < 0:
+        click.secho('Development dependencies not installed!', fg='red', err=True)
+        raise click.Abort()
+
+    init.load_configs(env, config_dir)
+    init.set_up_logging()
+    slack = slackclient.SlackClient(config['slack']['bot_user']['token'])
+    mapper = TrafficMapper()
+
+    location_aliases = config['google']['location_aliases']
+    origin = location_aliases.get(origin, origin)
+    destination = location_aliases.get(destination, destination)
+
+    for i in range(number_of_posts):
+        duration, distance, image_name = mapper.get_map(origin, destination)
+        slack_message = mapper.as_slack_message(origin, destination, duration, image_name)
+        slack.api_call('chat.postMessage', channel=slack_channel, **slack_message)
+
+        if i != number_of_posts - 1:
+            time.sleep(interval * 60)
 
 
 if __name__ == '__main__':
