@@ -67,8 +67,8 @@ def create_configs(config_dir):
 @click.option('--prod', 'env', flag_value='prod', help='Run with prod configs.')
 @click.option('--config-dir', type=path_type, help='Explicit configuration directory to use.')
 @click.option('--slack-channel', default='#general', help='Channel to post message in.')
-@click.option('-i', '--interval', type=FloatRange(min=0), default=15.0, help='Time in minutes to wait between posts.')
-@click.option('-n', '--number-of-posts', type=click.IntRange(min=1), default=9, help='Number of posts to make.')
+@click.option('-i', '--interval', type=FloatRange(min=0), default=0, help='Time in minutes to wait between posts.')
+@click.option('-n', '--number-of-posts', type=click.IntRange(min=1), default=1, help='Number of posts to make.')
 @click.argument('origin')
 @click.argument('destination')
 def traffic(env, config_dir, slack_channel, interval, number_of_posts, origin, destination):
@@ -97,7 +97,11 @@ def traffic(env, config_dir, slack_channel, interval, number_of_posts, origin, d
         duration, distance, image_name = mapper.get_map(origin, destination)
         slack_message = mapper.as_slack_message(
             origin, destination, duration, distance, image_name)
-        slack.api_call('chat.postMessage', channel=slack_channel, **slack_message)
+        slack.api_call(
+            'chat.postMessage',
+            channel=slack_channel,
+            as_user=True,
+            **slack_message)
 
         if i != number_of_posts - 1:
             time.sleep(interval * 60)
