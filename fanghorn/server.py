@@ -1,10 +1,12 @@
+from falcon_cors import CORS
+import falcon
+
 from . import init
 from .configuration import config
+from .healthcheck import HealthCheck
 from .message_router import SlackMessageRouter
 from .records import TinnitusRecorder
 from .traffic import TrafficPoster
-from falcon_cors import CORS
-import falcon
 
 
 def get_app(env, config_dir=None):
@@ -24,5 +26,6 @@ def _build_app():
     app.add_route('/api/messagerouter', SlackMessageRouter())
     app.add_route('/api/traffic', TrafficPoster())
     app.add_route('/api/records/tinnitus', TinnitusRecorder())
+    app.add_route('/healthcheck', HealthCheck())
 
     return app
