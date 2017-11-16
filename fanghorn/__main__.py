@@ -95,7 +95,8 @@ def traffic(env, config_dir, slack_channel, interval, number_of_posts, origin, d
 
     for i in range(number_of_posts):
         duration, distance, image_name = mapper.get_map(origin, destination)
-        slack_message = mapper.as_slack_message(origin, destination, duration, image_name)
+        slack_message = mapper.as_slack_message(
+            origin, destination, duration, distance, image_name)
         slack.api_call('chat.postMessage', channel=slack_channel, **slack_message)
 
         if i != number_of_posts - 1:

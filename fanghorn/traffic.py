@@ -25,7 +25,8 @@ class TrafficPoster:
         destination = data.text['to']
         duration, distance, image_name = self._mapper.get_map(origin, destination)
 
-        slack_message = self._mapper.as_slack_message(origin, destination, duration, image_name)
+        slack_message = self._mapper.as_slack_message(
+            origin, destination, duration, distance, image_name)
         slack_message.update(response_type='in_channel')
         resp.body = json.dumps(slack_message)
         resp.status = falcon.HTTP_200
