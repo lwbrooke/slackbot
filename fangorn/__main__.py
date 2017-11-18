@@ -1,3 +1,4 @@
+import datetime
 import os
 import pathlib
 import pkg_resources
@@ -65,13 +66,16 @@ def create_configs(config_dir):
 @main.command()
 @click.option('--local', 'env', flag_value='local', default=True, show_default=True, help='Run with dev configs.')
 @click.option('--prod', 'env', flag_value='prod', help='Run with prod configs.')
+@click.option('--weekdays', 'days', flag_value={0, 1, 2, 3, 4}, help='Only run on weekdays.')
+@click.option('--all-days', 'days', flag_value=set(range(7)), default=True, show_default=True, help='Run every day.')
+@click.option('--weekends', 'days', flag_value={5, 6}, help='Only run on weekends.')
 @click.option('--config-dir', type=path_type, help='Explicit configuration directory to use.')
 @click.option('--slack-channel', default='#general', help='Channel to post message in.')
 @click.option('-i', '--interval', type=FloatRange(min=0), default=0, help='Time in minutes to wait between posts.')
 @click.option('-n', '--number-of-posts', type=click.IntRange(min=1), default=1, help='Number of posts to make.')
 @click.argument('origin')
 @click.argument('destination')
-def traffic(env, config_dir, slack_channel, interval, number_of_posts, origin, destination):
+def traffic(env, days, config_dir, slack_channel, interval, number_of_posts, origin, destination):
     """
     Post traffic maps for the provided ORIGIN and DESTINATION to slack.
 
@@ -81,8 +85,12 @@ def traffic(env, config_dir, slack_channel, interval, number_of_posts, origin, d
     (e.g. "work" or "home")
     """
     if interval < 0:
-        click.secho('Development dependencies not installed!', fg='red', err=True)
+        click.secho('', fg='red', err=True)
         raise click.Abort()
+
+    if datetime.datetime.utcnow().weekday() not in days:
+        click.echo('Today is not a selected run day. Exiting')
+        return
 
     init.load_configs(env, config_dir)
     init.set_up_logging()
