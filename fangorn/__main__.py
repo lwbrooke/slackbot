@@ -6,6 +6,7 @@ import shutil
 import time
 
 import click
+import requests
 import slackclient
 
 from . import init
@@ -61,6 +62,40 @@ def create_configs(config_dir):
     with click.progressbar(config_files, label='copying files') as config_files:
         for f in config_files:
             shutil.copy(str(f), config_dir)
+
+
+@main.command('ping-site')
+@click.option('--local', 'env', flag_value='local', default=True, show_default=True, help='Run with dev configs.')
+@click.option('--prod', 'env', flag_value='prod', help='Run with prod configs.')
+@click.option('--config-dir', type=path_type, help='Explicit configuration directory to use.')
+@click.option('--slack-channel', default='#general', help='Channel to post message in.')
+@click.option('-d', '--duration', default=1, type=click.IntRange(1, 60), help='Time in minutes to ping site for.')
+@click.option('-s', '--sleep-time', default=15, type=click.IntRange(1, 600), help='Time in seconds between pings.')
+@click.argument('url')
+def ping_site(env, config_dir, slack_channel, duration, sleep_time, url):
+    """."""
+    init.load_configs(env, config_dir)
+    init.set_up_logging()
+    slack = slackclient.SlackClient(config['slack']['bot_user']['token'])
+
+    session = requests.Session()
+
+    start = time.time()
+    while time.time() - start < duration * 60:
+        response = session.get(url)
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as e:
+            slack.api_call(
+                'chat.postMessage',
+                channel=slack_channel,
+                as_user=True,
+                text='<!channel> {} is returning a bad response.'.format(url),
+                attachments=[{
+                    'text': 'Status Code: {}'.format(response.status_code),
+                    'color': 'danger'
+                }])
+        time.sleep(sleep_time)
 
 
 @main.command()
