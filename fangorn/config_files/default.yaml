@@ -8,16 +8,26 @@ slack:
           - "hdd"
           - "xbox one"
           - "ultrawide"
+        unmatch:
+          - "laptop"
+          - "[desktop]"
+          - "pre built"
+          - "pre-built"
+          - "prebuilt"
+          - "refurbish"
         output_channel: "#general"
       "FMF: Deals, Discussions, and Reviews":
         text_contains:
           - "red wing"
           - "filson"
           - "nordstrom"
+        unmatch: []
         output_channel: "#general"
       logan:
         text_contains:
           - "passphrase"
+        unmatch:
+          - "unmatch"
         output_channel: "#general"
 records:
   tinnitus:

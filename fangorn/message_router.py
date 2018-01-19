@@ -78,10 +78,11 @@ class Matcher:
     def __init__(self, spec):
         self._text_contains = spec['text_contains']
         self._output_channel = spec['output_channel']
+        self._unmatches = spec['unmatch']
 
     def __call__(self, data):
         lowered = data.text.lower()
-        return any(t in lowered for t in self._text_contains)
+        return any(t in lowered for t in self._text_contains) and all(u not in lowered for u in self._unmatches)
 
     @property
     def channel(self):
