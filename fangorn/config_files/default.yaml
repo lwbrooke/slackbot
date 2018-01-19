@@ -9,6 +9,12 @@ slack:
           - "xbox one"
           - "ultrawide"
         output_channel: "#general"
+      "FMF: Deals, Discussions, and Reviews":
+        text_contains:
+          - "red wing"
+          - "filson"
+          - "nordstrom"
+        output_channel: "#general"
       logan:
         text_contains:
           - "passphrase"
