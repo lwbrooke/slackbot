@@ -82,7 +82,8 @@ class Matcher:
 
     def __call__(self, data):
         lowered = data.text.lower()
-        return any(t in lowered for t in self._text_contains) and all(u not in lowered for u in self._unmatches)
+        return any(t in lowered for t in self._text_contains) \
+            and all(u not in lowered for u in self._unmatches)
 
     @property
     def channel(self):
