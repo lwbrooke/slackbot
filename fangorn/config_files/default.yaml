@@ -4,13 +4,12 @@ slack:
     matchers:
       Build a PC Sales:
         text_contains:
-          - "ssd"
           - "hdd"
-          - "xbox one"
+          - "ssd"
           - "ultrawide"
         unmatch:
-          - "laptop"
           - "[desktop]"
+          - "laptop"
           - "pre built"
           - "pre-built"
           - "prebuilt"
@@ -18,9 +17,18 @@ slack:
         output_channel: "#general"
       "FMF: Deals, Discussions, and Reviews":
         text_contains:
-          - "red wing"
+          - "N&F"
+          - "canvas"
+          - "common projects"
+          - "denim jacket"
+          - "field jacket"
           - "filson"
+          - "jean jacket"
+          - "naked & famous"
+          - "naked and famous"
           - "nordstrom"
+          - "raw denim"
+          - "trucker"
         unmatch: []
         output_channel: "#general"
       logan:
